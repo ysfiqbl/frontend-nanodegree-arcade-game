@@ -1,10 +1,10 @@
 // Enemies our player must avoid
-var Enemy = function(n, x, y) {
+var Enemy = function(x, y, dtMultiplier) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
-    this.name = n;
     this.x = x;
     this.y = y;
+    this.dtMultiplier = dtMultiplier;
     this.width = 60
     this.height = 60;
     // The image/sprite for our enemies, this uses
@@ -21,7 +21,7 @@ Enemy.prototype.update = function(dt) {
     if (this.x > ctx.canvas.width) {
         this.x = -100;
     }
-   this.x = this.x + 100*dt;
+   this.x = this.x + this.dtMultiplier*dt;
    this.checkCollisions();
 }
 
@@ -30,6 +30,10 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
+/**
+ * Checks if enemy collides with the player. If enemy collides with the player,
+ * the players reset function is called.
+ */
 Enemy.prototype.checkCollisions = function() {
     if (this.x < player.x + player.width && this.x + this.width > player.x
     && this.y < player.y + player.height && this.y + this.width > player.y) {
@@ -59,6 +63,10 @@ Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
+/**
+ * Move player left, right, up or down based on the key that is pressed.
+ * @param  {string} keyCode indicate which arrow key was pressed.
+ */
 Player.prototype.handleInput = function(keyCode) {
     var yStep = 80;
     var xStep = 100;
@@ -97,21 +105,43 @@ Player.prototype.reset = function() {
     if (this.lives == 0) {
         alert("Game Over");
     } else {
-        alert(this.lives + " remaining.")
+        alert(this.lives + " lives remaining.")
     }
     console.log(this.lives);
     this.x = this.origin.x;
     this.y = this.origin.y;
+    allEnemies = getEnemies();
 };
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
-var e1 = new Enemy("top",1,60);
-var e2 = new Enemy("mid",400,145);
-var e3 = new Enemy("bot", 200,230);
+function getEnemies() {
+    var enemies = [];
+    var yCordinates = [60, 145, 230];
+    var yEnemyMax = 1;
+    var yEnemyCounter = [0, 0, 0];
+    var xCordinates = [1, 200, 400];
+    var maxEnemies = 3;
+    var totalEnemies = 0;
 
-var allEnemies = [e1, e2, e3];
-//allEnemies.push();
+    while (totalEnemies <= maxEnemies) {
+        var dtMultiplier = Math.ceil(Math.random()*300 + 100);
+        var yIndex = Math.ceil(Math.random()*3) - 1;
+        var yStart = yCordinates[yIndex];
+        var xStart = xCordinates[Math.ceil(Math.random()*3) - 1];
+        if (yEnemyCounter[yIndex] <= yEnemyMax) {
+            enemies.push(new Enemy(xStart, yStart, dtMultiplier));
+            yEnemyCounter[yIndex]++;
+            totalEnemies = yEnemyCounter[0] + yEnemyCounter[1] + yEnemyCounter[2];
+        }
+    }
+
+    console.log(totalEnemies);
+
+    return enemies;
+}
+var allEnemies = getEnemies();
+
 // Place the player object in a variable called player
 var player = new Player();
 
