@@ -1,3 +1,19 @@
 body {
     text-align: center;
 }
+
+.icon {
+	display: inline-block;
+	padding-right: 40px;
+}
+
+.icon > img {
+	width: 30px;
+	height: auto;
+	vertical-align: -10px;
+}
+
+.icon > h4 {
+	margin-bottom: 10px;
+	display: inline-block;
+}

@@ -56,7 +56,7 @@ var Player = function() {
     this.y = this.origin.y;
     this.width = 60;
     this.height= 70;
-    this.lives = 3;
+    this.lifeCount = 3;
     this.wounded = false;
 }
 
@@ -111,18 +111,19 @@ Player.prototype.checkCollisions = function() {
 
 Player.prototype.reset = function() {
     if (this.wounded) {
-        this.lives--;
+        this.lifeCount--;
         this.wounded = false;
+        document.querySelector("#lives > h4 > span").innerHTML = this.lifeCount;
     }
-    if (this.lives == 0) {
+    if (this.lifeCount == 0) {
         alert("Game Over");
     } else {
-        alert(this.lives + " lives remaining.")
+        alert(this.lifeCount + " lives remaining.")
         this.x = this.origin.x;
         this.y = this.origin.y;
         allEnemies = getEnemies();
     }
-    console.log(this.lives);
+    console.log(this.lifeCount);
 };
 
 // Now instantiate your objects.
