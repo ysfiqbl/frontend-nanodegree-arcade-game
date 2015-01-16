@@ -1,3 +1,7 @@
+// y and x distance when moving between two squares
+var yStep = 80;
+var xStep = 100;
+
 // Enemies our player must avoid
 var Enemy = function(x, y, dtMultiplier) {
     // Variables applied to each of our instances go here,
@@ -44,6 +48,25 @@ Enemy.prototype.checkCollisions = function() {
 function hasCollided(a, b) {
     return a.x < b.x + b.width && a.x + a.width > b.x
         && a.y < b.y + b.height && a.y + a.width > b.y;
+}
+
+var Collectible = function() {
+    /*this.sprite = initState.sprite;
+    this.x = initState.x;
+    this.y = initState.y;
+    this.width = initState.width;*/
+}
+
+Collectible.prototype = {
+    render: function() {
+        //ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    },
+    update: function() {
+
+    },
+    destroy: function () {
+
+    }
 }
 
 // Now write your own player class
@@ -102,7 +125,7 @@ Player.prototype.handleInput = function(keyCode) {
         break;
     }
 
-    console.log(this.y);
+    //console.log(this.x);
 }
 
 Player.prototype.checkCollisions = function() {
@@ -123,7 +146,6 @@ Player.prototype.reset = function() {
         this.y = this.origin.y;
         allEnemies = getEnemies();
     }
-    console.log(this.lifeCount);
 };
 
 // Now instantiate your objects.
@@ -134,7 +156,7 @@ function getEnemies() {
     var yEnemyMax = 1;
     var yEnemyCounter = [0, 0, 0];
     var xCordinates = [1, 200, 400];
-    var maxEnemies = 3;
+    var maxEnemies = 4;
     var totalEnemies = 0;
 
     while (totalEnemies <= maxEnemies) {
@@ -149,11 +171,55 @@ function getEnemies() {
         }
     }
 
-    console.log(totalEnemies);
-
     return enemies;
 }
+
+function getCollectibles() {
+    var collectibles = [];
+    var enemies = [];
+    var yCordinates = [60, 145, 230];
+    var xCordinates = [0, 100, 200, 300, 400];
+    var maxGems = 2, numGems = 0;
+    var maxHearts = 1, numHearts = 0;
+    var maxRocks = 2, numRocks = 0;
+    var maxCollectibles = maxGems + maxHearts + maxRocks;
+
+
+    for (var i = 0; i <= maxCollectibles; i++) {
+        var yIndex = Math.ceil(Math.random()*3) - 1;
+        var yStart = yCordinates[yIndex];
+        var xStart = xCordinates[Math.ceil(Math.random()*5) - 1];
+        var rand = Math.random();
+
+        if (numHearts < maxHearts && rand > .95) {
+            console.log("Added heart to (" +xStart+","+yStart+"), rand = " + rand);
+            numHearts++;
+        } else if (numRocks < maxRocks && rand > .70) {
+            console.log("Added rock to (" +xStart+","+yStart+"), rand = " + rand);
+            numRocks++;
+        } else if (numGems < maxGems) {
+            if (rand < .4) {
+                // Add Blue Gem
+                console.log("Added blue gem to (" +xStart+","+yStart+"), rand = " + rand);
+            } else if (rand >= .4 && rand < .65) {
+                // Add Green Gem
+                console.log("Added green gem to (" +xStart+","+yStart+"), rand = " + rand);
+            } else {
+                // Add Orange Gem
+                console.log("Added orange gem to (" +xStart+","+yStart+"), rand = " + rand);
+            }
+            numGems++;
+        } else {
+            console.log("Reached default.. (" +xStart+","+yStart+"), rand = " + rand);
+        }
+    }
+
+    collectibles.push(new Collectible());
+    return collectibles;
+}
+
 var allEnemies = getEnemies();
+var collectibles = getCollectibles();
 
 // Place the player object in a variable called player
 var player = new Player();
