@@ -35,11 +35,15 @@ Enemy.prototype.render = function() {
  * the players reset function is called.
  */
 Enemy.prototype.checkCollisions = function() {
-    if (this.x < player.x + player.width && this.x + this.width > player.x
-    && this.y < player.y + player.height && this.y + this.width > player.y) {
+    if (hasCollided(this, player)) {
+        player.wounded = true;
         player.reset();
-        console.log(this.name + ": ("+Math.round(this.x) + "," + this.y + ") (" + player.x + "," + player.y + ")");
     }
+}
+
+function hasCollided(a, b) {
+    return a.x < b.x + b.width && a.x + a.width > b.x
+        && a.y < b.y + b.height && a.y + a.width > b.y;
 }
 
 // Now write your own player class
@@ -53,6 +57,7 @@ var Player = function() {
     this.width = 60;
     this.height= 70;
     this.lives = 3;
+    this.wounded = false;
 }
 
 Player.prototype.update = function(dt) {
@@ -77,8 +82,10 @@ Player.prototype.handleInput = function(keyCode) {
             }
         break;
         case 'up':
-            if(this.y != 60) {
+            if(this.y != 70) {
                 this.y = this.y - yStep;
+            } else {
+                this.reset();
             }
         break;
         case 'right':
@@ -87,13 +94,15 @@ Player.prototype.handleInput = function(keyCode) {
             }
         break;
         case 'down':
-            if(this.y != 380) {
+            if(this.y != 390) {
                 this.y = this.y + yStep;
             }
         break;
         default:
         break;
     }
+
+    console.log(this.y);
 }
 
 Player.prototype.checkCollisions = function() {
@@ -101,16 +110,19 @@ Player.prototype.checkCollisions = function() {
 };
 
 Player.prototype.reset = function() {
-    this.lives--;
+    if (this.wounded) {
+        this.lives--;
+        this.wounded = false;
+    }
     if (this.lives == 0) {
         alert("Game Over");
     } else {
         alert(this.lives + " lives remaining.")
+        this.x = this.origin.x;
+        this.y = this.origin.y;
+        allEnemies = getEnemies();
     }
     console.log(this.lives);
-    this.x = this.origin.x;
-    this.y = this.origin.y;
-    allEnemies = getEnemies();
 };
 
 // Now instantiate your objects.
