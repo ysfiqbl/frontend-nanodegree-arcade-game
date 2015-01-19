@@ -2,6 +2,11 @@
 var yStep = 80;
 var xStep = 100;
 
+function hasCollided(a, b) {
+    return a.x < b.x + b.width && a.x + a.width > b.x
+        && a.y < b.y + b.height && a.y + a.width > b.y;
+}
+
 // Enemies our player must avoid
 var Enemy = function(x, y, dtMultiplier) {
     // Variables applied to each of our instances go here,
@@ -14,7 +19,7 @@ var Enemy = function(x, y, dtMultiplier) {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
-}
+};
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -27,12 +32,12 @@ Enemy.prototype.update = function(dt) {
     }
    this.x = this.x + this.dtMultiplier*dt;
    this.checkCollisions();
-}
+};
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
+};
 
 /**
  * Checks if enemy collides with the player. If enemy collides with the player,
@@ -43,23 +48,18 @@ Enemy.prototype.checkCollisions = function() {
         player.wounded = true;
         player.reset();
     }
-}
+};
 
-function hasCollided(a, b) {
-    return a.x < b.x + b.width && a.x + a.width > b.x
-        && a.y < b.y + b.height && a.y + a.width > b.y;
-}
-
-var Collectible = function() {
-    /*this.sprite = initState.sprite;
+var Collectible = function(initState) {
+    this.sprite = initState.sprite;
     this.x = initState.x;
     this.y = initState.y;
-    this.width = initState.width;*/
-}
+    this.width = initState.width;
+};
 
 Collectible.prototype = {
     render: function() {
-        //ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     },
     update: function() {
 
@@ -67,7 +67,45 @@ Collectible.prototype = {
     destroy: function () {
 
     }
-}
+};
+
+var Gem = function(initState) {
+    Collectible.call(this, initState);
+    this.points = initState.points;
+};
+Gem.prototype = Object.create(Collectible.prototype);
+Gem.prototype.constructor = Gem;
+
+var BlueGem = function(initState) {
+    Gem.call(this, initState);
+};
+BlueGem.prototype = Object.create(Gem.prototype);
+BlueGem.prototype.constructor = BlueGem;
+
+var GreenGem = function(initState) {
+    Gem.call(this, initState);
+};
+GreenGem.prototype = Object.create(Gem.prototype);
+GreenGem.prototype.constructor = GreenGem;
+
+var OrangeGem = function(initState) {
+    Gem.call(this, initState);
+};
+OrangeGem.prototype = Object.create(Gem.prototype);
+OrangeGem.prototype.constructor = OrangeGem;
+
+var Heart = function(initState) {
+    Collectible.call(this, initState);
+};
+Heart.prototype = Object.create(Collectible.prototype);
+Heart.prototype.constructor = Heart;
+
+var Rock = function(initState) {
+    Collectible.call(this, initState);
+};
+Rock.prototype = Object.create(Collectible.prototype);
+Rock.prototype.constructor = Rock;
+
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -81,15 +119,15 @@ var Player = function() {
     this.height= 70;
     this.lifeCount = 3;
     this.wounded = false;
-}
+};
 
 Player.prototype.update = function(dt) {
 
-}
+};
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
+};
 
 /**
  * Move player left, right, up or down based on the key that is pressed.
@@ -126,7 +164,7 @@ Player.prototype.handleInput = function(keyCode) {
     }
 
     //console.log(this.x);
-}
+};
 
 Player.prototype.checkCollisions = function() {
 
@@ -145,6 +183,7 @@ Player.prototype.reset = function() {
         this.x = this.origin.x;
         this.y = this.origin.y;
         allEnemies = getEnemies();
+        collectibles = getCollectibles();
     }
 };
 
@@ -172,11 +211,10 @@ function getEnemies() {
     }
 
     return enemies;
-}
+};
 
 function getCollectibles() {
     var collectibles = [];
-    var enemies = [];
     var yCordinates = [60, 145, 230];
     var xCordinates = [0, 100, 200, 300, 400];
     var maxGems = 2, numGems = 0;
@@ -191,21 +229,36 @@ function getCollectibles() {
         var xStart = xCordinates[Math.ceil(Math.random()*5) - 1];
         var rand = Math.random();
 
-        if (numHearts < maxHearts && rand > .95) {
+        if (numHearts < maxHearts && rand > .98) {
             console.log("Added heart to (" +xStart+","+yStart+"), rand = " + rand);
+            collectibles.push(new Heart({
+                x: xStart, y: yStart, sprite: 'images/Heart.png'
+            }));
             numHearts++;
         } else if (numRocks < maxRocks && rand > .70) {
             console.log("Added rock to (" +xStart+","+yStart+"), rand = " + rand);
+            collectibles.push(new Rock({
+                x: xStart, y: yStart, sprite: 'images/Rock.png'
+            }));
             numRocks++;
         } else if (numGems < maxGems) {
             if (rand < .4) {
                 // Add Blue Gem
+                collectibles.push(new BlueGem({
+                    x: xStart, y: yStart, sprite: 'images/Gem Blue.png', points: 100
+                }));
                 console.log("Added blue gem to (" +xStart+","+yStart+"), rand = " + rand);
             } else if (rand >= .4 && rand < .65) {
                 // Add Green Gem
+                collectibles.push(new GreenGem({
+                    x: xStart, y: yStart, sprite: 'images/Gem Green.png', points: 200
+                }));
                 console.log("Added green gem to (" +xStart+","+yStart+"), rand = " + rand);
             } else {
                 // Add Orange Gem
+                collectibles.push(new OrangeGem({
+                    x: xStart, y: yStart, sprite: 'images/Gem Orange.png', points: 300
+                }));
                 console.log("Added orange gem to (" +xStart+","+yStart+"), rand = " + rand);
             }
             numGems++;
@@ -214,7 +267,6 @@ function getCollectibles() {
         }
     }
 
-    collectibles.push(new Collectible());
     return collectibles;
 }
 
