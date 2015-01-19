@@ -22,14 +22,21 @@ function gameOver() {
     ctx.shadowOffsetX= 10;
     ctx.shadowOffsetY = 10;
     ctx.shadowBlur = 10;
-    ctx.fillStyle = "#CC9900";
-    ctx.fillRect(40, 200, w - 80, h - 350);
+    ctx.fillStyle = "#812807"; //"#C73E0B";
+    ctx.fillRect(40, 200, w - 80, h - 400);
+
+    ctx.shadowOffsetX= 0;
+    ctx.shadowOffsetY = 0;
+    ctx.font = "48px serif"
+    ctx.fillText("Game Over!", 140, 290);
+    ctx.fillStyle = "#C73E0B";
+    ctx.fillText("Game Over!", 140, 290);
 
     var gameOverDiv = document.createElement('div');
     gameOverDiv.style.display = "block";
     gameOverDiv.style.position = "relative";
-    gameOverDiv.style.top = "-220px";
-    gameOverDiv.style.left = "10px";
+    gameOverDiv.style.top = "-260px";
+    gameOverDiv.style.left = "5px";
 
     var restartBtn = document.createElement('button');
     restartBtn.innerHTML = "Restart"
@@ -176,7 +183,7 @@ Rock.prototype.updatePlayerCollectibleCount = function() {
 // a handleInput() method.
 var Player = function() {
     this.sprite = 'images/char-boy.png';
-    this.origin = {x: 200, y: 390}
+    this.origin = {x: 200, y: 310}
     this.x = this.origin.x;
     this.y = this.origin.y;
     this.width = 60;

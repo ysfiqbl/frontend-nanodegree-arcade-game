@@ -1,6 +1,18 @@
 body {
     text-align: center;
 }
+.scoreboard {
+	position: relative;
+	top: 50px;
+	margin-left: 382px;
+	margin-right: 382px;
+	background: gray;
+}
+
+.scoreboard > h2 {
+	position: relative;
+	top: 25px;
+}
 
 .icon {
 	display: inline-block;
