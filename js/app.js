@@ -62,14 +62,14 @@ var Collectible = function(initState) {
     this.sprite = initState.sprite;
     this.x = initState.x;
     this.y = initState.y;
-    this.width = initState.width || 60;
-    this.height = initState.height || 60;
+    this.width = initState.width || 40;
+    this.height = initState.height || 40;
     this.countViewId = initState.countViewId;
 };
 
 Collectible.prototype = {
     render: function() {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 60, 102);
     },
     update: function() {
         if (hasCollided(this, player)) {
@@ -284,8 +284,8 @@ function getEnemies() {
 
 function getCollectibles() {
     var collectibles = [];
-    var yCordinates = [60, 145, 230];
-    var xCordinates = [0, 100, 200, 300, 400];
+    var yCordinates = [100, 185, 270];
+    var xCordinates = [20, 120, 220, 320, 420];
     var maxGems = 2, numGems = 0;
     var maxHearts = 1, numHearts = 0;
     var maxRocks = 2, numRocks = 0;
