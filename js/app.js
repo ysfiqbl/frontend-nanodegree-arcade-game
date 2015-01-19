@@ -11,8 +11,39 @@ function updateScoreView() {
     document.getElementById("score").innerHTML = "SCORE: "+ player.score;
 }
 
-function removeObjectFromCanvas() {
+function updateCollectibleViewCount(viewId, value){
+    document.querySelector(viewId + " > h4 > span").innerHTML = value;
+}
 
+function gameOver() {
+    var w = ctx.canvas.width;
+    var h = ctx.canvas.height;
+    ctx.shadowColor = "black";
+    ctx.shadowOffsetX= 10;
+    ctx.shadowOffsetY = 10;
+    ctx.shadowBlur = 10;
+    ctx.fillStyle = "#CC9900";
+    ctx.fillRect(40, 200, w - 80, h - 350);
+
+    var gameOverDiv = document.createElement('div');
+    gameOverDiv.style.display = "block";
+    gameOverDiv.style.position = "relative";
+    gameOverDiv.style.top = "-220px";
+    gameOverDiv.style.left = "10px";
+
+    var restartBtn = document.createElement('button');
+    restartBtn.innerHTML = "Restart"
+    restartBtn.style.marginRight = "50px";
+    restartBtn.style.height = "35px";
+
+    var mainMenuBtn = document.createElement('button');
+    mainMenuBtn.innerHTML = "Main Menu"
+    mainMenuBtn.style.marginLeft = "50px";
+    mainMenuBtn.style.height = "35px";
+
+    gameOverDiv.appendChild(restartBtn);
+    gameOverDiv.appendChild(mainMenuBtn);
+    document.body.appendChild(gameOverDiv);
 }
 
 // Enemies our player must avoid
@@ -75,7 +106,7 @@ Collectible.prototype = {
         if (hasCollided(this, player)) {
             this.destroy();
             var newCount = this.updatePlayerCollectibleCount();
-            document.querySelector(this.countViewId + " > h4 > span").innerHTML = newCount;
+            updateCollectibleViewCount(this.countViewId, newCount);
             if (this.hasOwnProperty('points')) {
                 player.incrementScore(this.points);
                 updateScoreView();
@@ -197,6 +228,15 @@ Player.prototype.incrementRocks = function(increment) {
     return this.rocks;
 }
 
+Player.prototype.isAlive = function() {
+    return this.lifeCount > 0;
+}
+
+Player.prototype.reachedWater = function() {
+    this.score+=100;
+    updateScoreView();
+}
+
 /**
  * Move player left, right, up or down based on the key that is pressed.
  * @param  {string} keyCode indicate which arrow key was pressed.
@@ -207,31 +247,29 @@ Player.prototype.handleInput = function(keyCode) {
     switch(keyCode) {
         case 'left':
             if(this.x != 0) {
-                this.x = this.x - xStep;
+                this.x -= xStep;
             }
         break;
         case 'up':
             if(this.y != 70) {
-                this.y = this.y - yStep;
+                this.y -= yStep;
             } else {
                 this.reset();
             }
         break;
         case 'right':
             if(this.x != 400) {
-                this.x = this.x + xStep;
+                this.x += xStep;
             }
         break;
         case 'down':
             if(this.y != 390) {
-                this.y = this.y + yStep;
+                this.y += yStep;
             }
         break;
         default:
         break;
     }
-
-    //console.log(this.x);
 };
 
 Player.prototype.checkCollisions = function() {
@@ -242,18 +280,21 @@ Player.prototype.reset = function() {
     if (this.wounded) {
         this.lifeCount--;
         this.wounded = false;
-        document.querySelector("#lives > h4 > span").innerHTML = this.lifeCount;
-    }
-    if (this.lifeCount == 0) {
-        alert("Game Over");
-        player = new Player();
+        updateCollectibleViewCount("#lives", this.lifeCount);
+
+        if (this.lifeCount == 0) {
+            gameOver();
+        } else {
+            alert("You hit a bug and got wounded. You have "+ this.lifeCount + " lives remaining.");
+        }
     } else {
-        alert(this.lifeCount + " lives remaining.")
-        this.x = this.origin.x;
-        this.y = this.origin.y;
-        allEnemies = getEnemies();
-        collectibles = getCollectibles();
+        // Reached end, update score
+        player.reachedWater();
     }
+    this.x = this.origin.x;
+    this.y = this.origin.y;
+    allEnemies = getEnemies();
+    collectibles = getCollectibles();
 };
 
 // Now instantiate your objects.

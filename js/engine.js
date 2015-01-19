@@ -108,6 +108,7 @@ var Engine = (function(global) {
      * they are just drawing the entire screen over and over.
      */
     function render() {
+        if (!player.isAlive()) return;
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
@@ -161,8 +162,6 @@ var Engine = (function(global) {
         });
 
         player.render();
-
-
     }
 
     /* This function does nothing but it could have been a good place to
@@ -171,6 +170,7 @@ var Engine = (function(global) {
      */
     function reset() {
         // noop
+
     }
 
     /* Go ahead and load all of the images we know we're going to need to
