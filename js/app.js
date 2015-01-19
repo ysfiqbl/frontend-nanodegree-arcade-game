@@ -1,18 +1,42 @@
 // y and x distance when moving between two squares
 var yStep = 80;
 var xStep = 100;
+var player = null;
+var allEnemies = null;
+var collectibles = null;
 
-function hasCollided(a, b) {
-    return a.x < b.x + b.width && a.x + a.width > b.x
-        && a.y < b.y + b.height && a.y + a.width > b.y;
-}
+function mainMenu() {
+    var w = ctx.canvas.width;
+    var h = ctx.canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.shadowColor = "black";
+    ctx.shadowOffsetX= 10;
+    ctx.shadowOffsetY = 10;
+    ctx.shadowBlur = 10;
+    ctx.fillStyle = "red"; //"#C73E0B";
+    ctx.fillRect(40, 200, w - 80, h - 400);
+    var mainMenu = document.createElement('div');
+    mainMenu.style.display = "block";
+    mainMenu.style.position = "relative";
+    mainMenu.style.top = "-260px";
+    mainMenu.style.left = "5px";
+    mainMenu.classList.add("main-menu");
 
-function updateScoreView() {
-    document.getElementById("score").innerHTML = "SCORE: "+ player.score;
-}
+    var startBtn = document.createElement('button');
+    startBtn.innerHTML = "Start"
+    startBtn.style.marginRight = "50px";
+    startBtn.style.height = "35px";
 
-function updateCollectibleViewCount(viewId, value){
-    document.querySelector(viewId + " > h4 > span").innerHTML = value;
+
+    mainMenu.appendChild(startBtn);
+    startBtn.addEventListener('click', function(){
+        removeMainMenu();
+        startGame('images/char-boy.png')
+    });
+    document.body.appendChild(mainMenu);
+
+    ctx.shadowOffsetX= 0;
+    ctx.shadowOffsetY = 0;
 }
 
 function gameOver() {
@@ -37,6 +61,7 @@ function gameOver() {
     gameOverDiv.style.position = "relative";
     gameOverDiv.style.top = "-260px";
     gameOverDiv.style.left = "5px";
+    gameOverDiv.classList.add('game-over-menu');
 
     var restartBtn = document.createElement('button');
     restartBtn.innerHTML = "Restart"
@@ -48,9 +73,40 @@ function gameOver() {
     mainMenuBtn.style.marginLeft = "50px";
     mainMenuBtn.style.height = "35px";
 
+    restartBtn.addEventListener('click', function() {
+        removeGameOverMenu();
+        startGame(player.sprite);
+    });
+    mainMenuBtn.addEventListener('click', function() {
+        removeGameOverMenu();
+        mainMenu();
+    });
+
     gameOverDiv.appendChild(restartBtn);
     gameOverDiv.appendChild(mainMenuBtn);
     document.body.appendChild(gameOverDiv);
+}
+
+function removeMainMenu() {
+    document.body.removeChild(document.querySelector('.main-menu'));
+}
+
+
+function removeGameOverMenu() {
+    document.body.removeChild(document.querySelector('.game-over-menu'));
+}
+
+function hasCollided(a, b) {
+    return a.x < b.x + b.width && a.x + a.width > b.x
+        && a.y < b.y + b.height && a.y + a.width > b.y;
+}
+
+function updateScoreView() {
+    document.getElementById("score").innerHTML = "SCORE: "+ player.score;
+}
+
+function updateCollectibleViewCount(viewId, value){
+    document.querySelector(viewId + " > h4 > span").innerHTML = value;
 }
 
 // Enemies our player must avoid
@@ -181,8 +237,8 @@ Rock.prototype.updatePlayerCollectibleCount = function() {
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-var Player = function() {
-    this.sprite = 'images/char-boy.png';
+var Player = function(sprite) {
+    this.sprite = sprite;
     this.origin = {x: 200, y: 310}
     this.x = this.origin.x;
     this.y = this.origin.y;
@@ -305,6 +361,13 @@ Player.prototype.reset = function() {
 };
 
 // Now instantiate your objects.
+function startGame(playerSprite) {
+    allEnemies = getEnemies();
+    collectibles = getCollectibles();
+    // Place the player object in a variable called player
+    player = new Player(playerSprite);
+}
+
 // Place all enemy objects in an array called allEnemies
 function getEnemies() {
     var enemies = [];
@@ -408,13 +471,6 @@ function getCollectibles() {
 
     return collectibles;
 }
-
-var allEnemies = getEnemies();
-var collectibles = getCollectibles();
-
-// Place the player object in a variable called player
-var player = new Player();
-
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

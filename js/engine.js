@@ -45,8 +45,10 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-        update(dt);
-        render();
+        if (player != null) {
+            update(dt);
+            render();
+        }
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -172,7 +174,7 @@ var Engine = (function(global) {
      */
     function reset() {
         // noop
-
+        mainMenu();
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -191,6 +193,10 @@ var Engine = (function(global) {
         'images/Key.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
     ]);
     Resources.onReady(init);
 
