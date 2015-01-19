@@ -2,6 +2,7 @@ body {
     text-align: center;
 }
 .scoreboard {
+	display: none;
 	position: relative;
 	top: 50px;
 	margin-left: 382px;
@@ -28,4 +29,4 @@ body {
 .icon > h4 {
 	margin-bottom: 10px;
 	display: inline-block;
-}
+}*/

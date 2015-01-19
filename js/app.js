@@ -93,6 +93,7 @@ function removeMainMenu() {
 
 
 function removeGameOverMenu() {
+    hideScoreBoard();
     document.body.removeChild(document.querySelector('.game-over-menu'));
 }
 
@@ -101,12 +102,40 @@ function hasCollided(a, b) {
         && a.y < b.y + b.height && a.y + a.width > b.y;
 }
 
-function updateScoreView() {
-    document.getElementById("score").innerHTML = "SCORE: "+ player.score;
+function updateScoreView(score) {
+    document.getElementById("score").innerHTML = "SCORE: "+ score;
 }
 
 function updateCollectibleViewCount(viewId, value){
     document.querySelector(viewId + " > h4 > span").innerHTML = value;
+}
+
+function resetScoreBoard() {
+    var collectiblesViewIds = [
+        "#blue-gems",
+        "#green-gems",
+        "#orange-gems",
+        "#rocks",
+        "#lives",
+    ]
+
+    var viewId, value;
+
+    for (var i=0; i< collectiblesViewIds.length; i++) {
+        viewId = collectiblesViewIds[i];
+        value = "#lives" == viewId ? 3 : 0;
+        updateCollectibleViewCount(viewId, value);
+    }
+
+    updateScoreView(0);
+}
+
+function hideScoreBoard() {
+    document.querySelector(".scoreboard").style.display = "none";
+}
+
+function showScoreBoard() {
+    document.querySelector(".scoreboard").style.display = "block";
 }
 
 // Enemies our player must avoid
@@ -172,7 +201,7 @@ Collectible.prototype = {
             updateCollectibleViewCount(this.countViewId, newCount);
             if (this.hasOwnProperty('points')) {
                 player.incrementScore(this.points);
-                updateScoreView();
+                updateScoreView(player.score);
             }
         }
     },
@@ -297,7 +326,7 @@ Player.prototype.isAlive = function() {
 
 Player.prototype.reachedWater = function() {
     this.score+=100;
-    updateScoreView();
+    updateScoreView(this.score);
 }
 
 /**
@@ -362,6 +391,8 @@ Player.prototype.reset = function() {
 
 // Now instantiate your objects.
 function startGame(playerSprite) {
+    showScoreBoard();
+    resetScoreBoard();
     allEnemies = getEnemies();
     collectibles = getCollectibles();
     // Place the player object in a variable called player
