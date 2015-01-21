@@ -18,7 +18,7 @@ function mainMenu() {
          child = mainMenuDivChildren[i];
         if (child.nodeName == "BUTTON") {
             child.addEventListener("click", function(e) {
-                removeMainMenu();
+                hideMainMenu();
                 startGame(this.firstElementChild.getAttribute("src"));
             }, false);
         }
@@ -78,7 +78,7 @@ function gameOver() {
     document.body.appendChild(gameOverDiv);
 }
 
-function removeMainMenu() {
+function hideMainMenu() {
     document.querySelector('.main-menu').style.display = "none";
 }
 
