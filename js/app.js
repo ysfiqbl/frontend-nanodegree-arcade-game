@@ -54,11 +54,15 @@ function gameOver() {
     restartBtn.innerHTML = "Restart"
     restartBtn.style.marginRight = "50px";
     restartBtn.style.height = "35px";
+    restartBtn.style.background = "#C73E0B"
+    restartBtn.style.color = "#FFF";
 
     var mainMenuBtn = document.createElement('button');
     mainMenuBtn.innerHTML = "Main Menu"
     mainMenuBtn.style.marginLeft = "50px";
     mainMenuBtn.style.height = "35px";
+    mainMenuBtn.style.background = "#C73E0B";
+    mainMenuBtn.style.color = "#FFF";
 
     restartBtn.addEventListener('click', function() {
         removeGameOverMenu();

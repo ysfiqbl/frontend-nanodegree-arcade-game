@@ -1,6 +1,13 @@
 body {
     text-align: center;
+    font-family: 'Oxygen', sans-serif;
 }
+
+h1 {
+	position: relative;
+	top: 50px;
+}
+
 .scoreboard {
 	display: none;
 	position: relative;
@@ -33,4 +40,6 @@ body {
 
 .main-menu {
 	display: none;
+	position: relative;
+	top: 50px;
 }
