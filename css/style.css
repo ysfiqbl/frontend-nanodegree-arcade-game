@@ -29,4 +29,8 @@ body {
 .icon > h4 {
 	margin-bottom: 10px;
 	display: inline-block;
-}*/
+}
+
+.main-menu {
+	display: none;
+}

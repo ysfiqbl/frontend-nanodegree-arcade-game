@@ -4,39 +4,26 @@ var xStep = 100;
 var player = null;
 var allEnemies = null;
 var collectibles = null;
+var characters = [];
 
 function mainMenu() {
     var w = ctx.canvas.width;
     var h = ctx.canvas.height;
     ctx.clearRect(0, 0, w, h);
-    ctx.shadowColor = "black";
-    ctx.shadowOffsetX= 10;
-    ctx.shadowOffsetY = 10;
-    ctx.shadowBlur = 10;
-    ctx.fillStyle = "red"; //"#C73E0B";
-    ctx.fillRect(40, 200, w - 80, h - 400);
-    var mainMenu = document.createElement('div');
-    mainMenu.style.display = "block";
-    mainMenu.style.position = "relative";
-    mainMenu.style.top = "-260px";
-    mainMenu.style.left = "5px";
-    mainMenu.classList.add("main-menu");
+    var mainMenuDiv = document.querySelector(".main-menu");
+    mainMenuDiv.style.display = "block";
+    mainMenuDivChildren = mainMenuDiv.children;
+    var child;
+    for (var i = 0; i < mainMenuDivChildren.length; i++) {
+         child = mainMenuDivChildren[i];
+        if (child.nodeName == "BUTTON") {
+            child.addEventListener("click", function(e) {
+                removeMainMenu();
+                startGame(this.firstElementChild.getAttribute("src"));
+            }, false);
+        }
 
-    var startBtn = document.createElement('button');
-    startBtn.innerHTML = "Start"
-    startBtn.style.marginRight = "50px";
-    startBtn.style.height = "35px";
-
-
-    mainMenu.appendChild(startBtn);
-    startBtn.addEventListener('click', function(){
-        removeMainMenu();
-        startGame('images/char-boy.png')
-    });
-    document.body.appendChild(mainMenu);
-
-    ctx.shadowOffsetX= 0;
-    ctx.shadowOffsetY = 0;
+    }
 }
 
 function gameOver() {
@@ -88,7 +75,7 @@ function gameOver() {
 }
 
 function removeMainMenu() {
-    document.body.removeChild(document.querySelector('.main-menu'));
+    document.querySelector('.main-menu').style.display = "none";
 }
 
 
