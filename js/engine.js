@@ -100,8 +100,8 @@ var Engine = (function(global) {
         });
         player.update();
 
-        collectibles.forEach(function(collectible) {
-            collectible.update(dt);
+        collectables.forEach(function(collectable) {
+            collectable.update(dt);
         });
     }
 
@@ -161,8 +161,8 @@ var Engine = (function(global) {
             enemy.render();
         });
 
-        collectibles.forEach(function(collectible) {
-            collectible.render();
+        collectables.forEach(function(collectable) {
+            collectable.render();
         });
 
         player.render();

@@ -3,7 +3,7 @@ var yStep = 80;
 var xStep = 100;
 var player = null;
 var allEnemies = null;
-var collectibles = null;
+var collectables = null;
 var characters = [];
 
 function mainMenu() {
@@ -93,12 +93,12 @@ function updateScoreView(score) {
     document.getElementById("score").innerHTML = "SCORE: "+ score;
 }
 
-function updateCollectibleViewCount(viewId, value){
+function updateCollectableViewCount(viewId, value){
     document.querySelector(viewId + " > h4 > span").innerHTML = value;
 }
 
 function resetScoreBoard() {
-    var collectiblesViewIds = [
+    var collectablesViewIds = [
         "#blue-gems",
         "#green-gems",
         "#orange-gems",
@@ -108,10 +108,10 @@ function resetScoreBoard() {
 
     var viewId, value;
 
-    for (var i=0; i< collectiblesViewIds.length; i++) {
-        viewId = collectiblesViewIds[i];
+    for (var i=0; i< collectablesViewIds.length; i++) {
+        viewId = collectablesViewIds[i];
         value = "#lives" == viewId ? 3 : 0;
-        updateCollectibleViewCount(viewId, value);
+        updateCollectableViewCount(viewId, value);
     }
 
     updateScoreView(0);
@@ -168,7 +168,7 @@ Enemy.prototype.checkCollisions = function() {
     }
 };
 
-var Collectible = function(initState) {
+var Collectable = function(initState) {
     this.sprite = initState.sprite;
     this.x = initState.x;
     this.y = initState.y;
@@ -177,15 +177,15 @@ var Collectible = function(initState) {
     this.countViewId = initState.countViewId;
 };
 
-Collectible.prototype = {
+Collectable.prototype = {
     render: function() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 60, 102);
     },
     update: function() {
         if (hasCollided(this, player)) {
             this.destroy();
-            var newCount = this.updatePlayerCollectibleCount();
-            updateCollectibleViewCount(this.countViewId, newCount);
+            var newCount = this.updatePlayerCollectableCount();
+            updateCollectableViewCount(this.countViewId, newCount);
             if (this.hasOwnProperty('points')) {
                 player.incrementScore(this.points);
                 updateScoreView(player.score);
@@ -198,10 +198,10 @@ Collectible.prototype = {
 };
 
 var Gem = function(initState) {
-    Collectible.call(this, initState);
+    Collectable.call(this, initState);
     this.points = initState.points;
 };
-Gem.prototype = Object.create(Collectible.prototype);
+Gem.prototype = Object.create(Collectable.prototype);
 Gem.prototype.constructor = Gem;
 
 var BlueGem = function(initState) {
@@ -209,7 +209,7 @@ var BlueGem = function(initState) {
 };
 BlueGem.prototype = Object.create(Gem.prototype);
 BlueGem.prototype.constructor = BlueGem;
-BlueGem.prototype.updatePlayerCollectibleCount = function() {
+BlueGem.prototype.updatePlayerCollectableCount = function() {
     return player.incrementBlueGems(1);
 }
 
@@ -218,7 +218,7 @@ var GreenGem = function(initState) {
 };
 GreenGem.prototype = Object.create(Gem.prototype);
 GreenGem.prototype.constructor = GreenGem;
-GreenGem.prototype.updatePlayerCollectibleCount = function() {
+GreenGem.prototype.updatePlayerCollectableCount = function() {
     return player.incrementGreenGems(1);
 }
 
@@ -227,25 +227,25 @@ var OrangeGem = function(initState) {
 };
 OrangeGem.prototype = Object.create(Gem.prototype);
 OrangeGem.prototype.constructor = OrangeGem;
-OrangeGem.prototype.updatePlayerCollectibleCount = function() {
+OrangeGem.prototype.updatePlayerCollectableCount = function() {
     return player.incrementOrangeGems(1);
 }
 
 var Heart = function(initState) {
-    Collectible.call(this, initState);
+    Collectable.call(this, initState);
 };
-Heart.prototype = Object.create(Collectible.prototype);
+Heart.prototype = Object.create(Collectable.prototype);
 Heart.prototype.constructor = Heart;
-Heart.prototype.updatePlayerCollectibleCount = function() {
+Heart.prototype.updatePlayerCollectableCount = function() {
     return player.incrementLifeCount(1);
 }
 
 var Rock = function(initState) {
-    Collectible.call(this, initState);
+    Collectable.call(this, initState);
 };
-Rock.prototype = Object.create(Collectible.prototype);
+Rock.prototype = Object.create(Collectable.prototype);
 Rock.prototype.constructor = Rock;
-Rock.prototype.updatePlayerCollectibleCount = function() {
+Rock.prototype.updatePlayerCollectableCount = function() {
     return player.incrementRocks(1);
 }
 
@@ -359,7 +359,7 @@ Player.prototype.reset = function() {
     if (this.wounded) {
         this.lifeCount--;
         this.wounded = false;
-        updateCollectibleViewCount("#lives", this.lifeCount);
+        updateCollectableViewCount("#lives", this.lifeCount);
 
         if (this.lifeCount == 0) {
             gameOver();
@@ -373,7 +373,7 @@ Player.prototype.reset = function() {
     this.x = this.origin.x;
     this.y = this.origin.y;
     allEnemies = getEnemies();
-    collectibles = getCollectibles();
+    collectables = getCollectables();
 };
 
 // Now instantiate your objects.
@@ -381,7 +381,7 @@ function startGame(playerSprite) {
     showScoreBoard();
     resetScoreBoard();
     allEnemies = getEnemies();
-    collectibles = getCollectibles();
+    collectables = getCollectables();
     // Place the player object in a variable called player
     player = new Player(playerSprite);
 }
@@ -411,19 +411,19 @@ function getEnemies() {
     return enemies;
 };
 
-function getCollectibles() {
-    var collectibles = [];
+function getCollectables() {
+    var collectables = [];
     var yCordinates = [100, 185, 270];
     var xCordinates = [20, 120, 220, 320, 420];
     var maxGems = 2, numGems = 0;
     var maxHearts = 1, numHearts = 0;
     var maxRocks = 2, numRocks = 0;
-    var maxCollectibles = maxGems + maxHearts + maxRocks;
+    var maxCollectables = maxGems + maxHearts + maxRocks;
     var xStart, yStart, yIndex, rand = 0;
 
     var isVacantSpace = function() {
-        for (var i = 0; i < collectibles.length; i++) {
-            if (collectibles[i].x == xStart && collectibles[i].y == yStart) {
+        for (var i = 0; i < collectables.length; i++) {
+            if (collectables[i].x == xStart && collectables[i].y == yStart) {
                 return false;
             }
         }
@@ -431,14 +431,14 @@ function getCollectibles() {
         return true;
     };
 
-    for (var i = 0; i <= maxCollectibles; i++) {
+    for (var i = 0; i <= maxCollectables; i++) {
         yIndex = Math.ceil(Math.random()*3) - 1;
         yStart = yCordinates[yIndex];
         xStart = xCordinates[Math.ceil(Math.random()*5) - 1];
         rand = Math.random();
         if (isVacantSpace()) {
             if (numHearts < maxHearts && rand > .98) {
-                collectibles.push(new Heart({
+                collectables.push(new Heart({
                     x: xStart,
                     y: yStart,
                     sprite: 'images/Heart.png',
@@ -446,7 +446,7 @@ function getCollectibles() {
                 }));
                 numHearts++;
             } else if (numRocks < maxRocks && rand > .70) {
-                collectibles.push(new Rock({
+                collectables.push(new Rock({
                     x: xStart, y:
                     yStart,
                     sprite: 'images/Rock.png',
@@ -456,7 +456,7 @@ function getCollectibles() {
             } else if (numGems < maxGems) {
                 if (rand < .4) {
                     // Add Blue Gem
-                    collectibles.push(new BlueGem({
+                    collectables.push(new BlueGem({
                         x: xStart,
                         y: yStart,
                         sprite: 'images/Gem Blue.png',
@@ -465,7 +465,7 @@ function getCollectibles() {
                     }));
                 } else if (rand >= .4 && rand < .65) {
                     // Add Green Gem
-                    collectibles.push(new GreenGem({
+                    collectables.push(new GreenGem({
                         x: xStart,
                         y: yStart,
                         sprite: 'images/Gem Green.png',
@@ -474,7 +474,7 @@ function getCollectibles() {
                     }));
                 } else {
                     // Add Orange Gem
-                    collectibles.push(new OrangeGem({
+                    collectables.push(new OrangeGem({
                         x: xStart,
                         y: yStart,
                         sprite: 'images/Gem Orange.png',
@@ -487,7 +487,7 @@ function getCollectibles() {
         }
     }
 
-    return collectibles;
+    return collectables;
 }
 
 // This listens for key presses and sends the keys to your
