@@ -332,41 +332,40 @@ var Enemy = function(x, y, dtMultiplier) {
 	this.sprite = 'images/enemy-bug.png';
 };
 
-
-/**
- * Update the enemy's position, required method for game.
- * Any movement is multiplied by the dt parameter to ensure the game runs at the same
- * speed for all computers.
- * A collision check is done after updating the position.
- *
- * @param  {int} dt a time delta between ticks
- */
-Enemy.prototype.update = function(dt) {
+Enemy.prototype = {
 	/**
-
+	 * Update the enemy's position, required method for game.
+	 * Any movement is multiplied by the dt parameter to ensure the game runs at the same
+	 * speed for all computers. If the enemy reaches the end of the canvas then reset
+	 * the position.
+	 * A collision check is done after updating the position.
+	 *
+	 * @param  {int} dt a time delta between ticks
 	 */
-	if (this.x > ctx.canvas.width) {
-		this.x = -100;
-	}
-	this.x = this.x + this.dtMultiplier*dt;
-	this.checkCollisions();
-};
+	update: function(dt) {
+		if (this.x > ctx.canvas.width) {
+			this.x = -100;
+		}
+		this.x = this.x + this.dtMultiplier*dt;
+		this.checkCollisions();
+	},
 
-/**
- * Draw the enemy on the screen, required method for game
- */
-Enemy.prototype.render = function() {
-	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+	/**
+	 * Draw the enemy on the screen, required method for game
+	 */
+	render: function() {
+		ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+	},
 
-/**
- * Checks if enemy collides with the player. If enemy collides with the player,
- * the players reset function is called.
- */
-Enemy.prototype.checkCollisions = function() {
-	if (game.hasCollided(this, player)) {
-		player.wounded = true;
-		player.reset();
+	/**
+	 * Checks if enemy collides with the player. If enemy collides with the player,
+	 * the players reset function is called.
+	 */
+	checkCollisions: function() {
+		if (game.hasCollided(this, player)) {
+			player.wounded = true;
+			player.reset();
+		}
 	}
 };
 
