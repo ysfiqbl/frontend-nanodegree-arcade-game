@@ -10,96 +10,91 @@ var Game = function Game() {
 
 }
 
-Game.prototype = function() {
+Game.prototype = {
+    mainMenu: function() {
+        var w = ctx.canvas.width;
+        var h = ctx.canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        var mainMenuDiv = document.querySelector(".main-menu");
+        mainMenuDiv.style.display = "block";
+        mainMenuDivChildren = mainMenuDiv.children;
+        var child;
+        for (var i = 0; i < mainMenuDivChildren.length; i++) {
+             child = mainMenuDivChildren[i];
+            if (child.nodeName == "BUTTON") {
+                child.addEventListener("click", function(e) {
+                    game.hideMainMenu();
+                    startGame(this.firstElementChild.getAttribute("src"));
+                }, false);
+            }
 
-}
-
-function mainMenu() {
-    var w = ctx.canvas.width;
-    var h = ctx.canvas.height;
-    ctx.clearRect(0, 0, w, h);
-    var mainMenuDiv = document.querySelector(".main-menu");
-    mainMenuDiv.style.display = "block";
-    mainMenuDivChildren = mainMenuDiv.children;
-    var child;
-    for (var i = 0; i < mainMenuDivChildren.length; i++) {
-         child = mainMenuDivChildren[i];
-        if (child.nodeName == "BUTTON") {
-            child.addEventListener("click", function(e) {
-                hideMainMenu();
-                startGame(this.firstElementChild.getAttribute("src"));
-            }, false);
         }
+    },
+    gameOver: function() {
+        var w = ctx.canvas.width;
+        var h = ctx.canvas.height;
+        ctx.shadowColor = "black";
+        ctx.shadowOffsetX= 10;
+        ctx.shadowOffsetY = 10;
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = "#812807";
+        ctx.fillRect(40, 200, w - 80, h - 400);
 
+        ctx.shadowOffsetX= 0;
+        ctx.shadowOffsetY = 0;
+        ctx.font = "48px serif"
+        ctx.fillText("Game Over!", 140, 290);
+        ctx.fillStyle = "#C73E0B";
+        ctx.fillText("Game Over!", 140, 290);
+
+        var gameOverDiv = document.createElement('div');
+        gameOverDiv.style.display = "block";
+        gameOverDiv.style.position = "relative";
+        gameOverDiv.style.top = "-260px";
+        gameOverDiv.style.left = "5px";
+        gameOverDiv.classList.add('game-over-menu');
+
+        var restartBtn = document.createElement('button');
+        restartBtn.innerHTML = "Restart"
+        restartBtn.style.marginRight = "50px";
+        restartBtn.style.height = "35px";
+        restartBtn.style.background = "#C73E0B"
+        restartBtn.style.color = "#FFF";
+
+        var mainMenuBtn = document.createElement('button');
+        mainMenuBtn.innerHTML = "Main Menu"
+        mainMenuBtn.style.marginLeft = "50px";
+        mainMenuBtn.style.height = "35px";
+        mainMenuBtn.style.background = "#C73E0B";
+        mainMenuBtn.style.color = "#FFF";
+
+        restartBtn.addEventListener('click', function() {
+            game.removeGameOverMenu();
+            startGame(player.sprite);
+        });
+        mainMenuBtn.addEventListener('click', function() {
+            game.removeGameOverMenu();
+            game.mainMenu();
+        });
+
+        gameOverDiv.appendChild(restartBtn);
+        gameOverDiv.appendChild(mainMenuBtn);
+        document.body.appendChild(gameOverDiv);
+    },
+    hideMainMenu: function() {
+        document.querySelector('.main-menu').style.display = "none";
+    },
+    removeGameOverMenu: function() {
+        scoreboard.hide();
+        document.body.removeChild(document.querySelector('.game-over-menu'));
+    },
+    hasCollided: function(a, b) {
+        return a.x < b.x + b.width && a.x + a.width > b.x
+            && a.y < b.y + b.height && a.y + a.width > b.y;
     }
-}
+};
 
-function gameOver() {
-    var w = ctx.canvas.width;
-    var h = ctx.canvas.height;
-    ctx.shadowColor = "black";
-    ctx.shadowOffsetX= 10;
-    ctx.shadowOffsetY = 10;
-    ctx.shadowBlur = 10;
-    ctx.fillStyle = "#812807";
-    ctx.fillRect(40, 200, w - 80, h - 400);
-
-    ctx.shadowOffsetX= 0;
-    ctx.shadowOffsetY = 0;
-    ctx.font = "48px serif"
-    ctx.fillText("Game Over!", 140, 290);
-    ctx.fillStyle = "#C73E0B";
-    ctx.fillText("Game Over!", 140, 290);
-
-    var gameOverDiv = document.createElement('div');
-    gameOverDiv.style.display = "block";
-    gameOverDiv.style.position = "relative";
-    gameOverDiv.style.top = "-260px";
-    gameOverDiv.style.left = "5px";
-    gameOverDiv.classList.add('game-over-menu');
-
-    var restartBtn = document.createElement('button');
-    restartBtn.innerHTML = "Restart"
-    restartBtn.style.marginRight = "50px";
-    restartBtn.style.height = "35px";
-    restartBtn.style.background = "#C73E0B"
-    restartBtn.style.color = "#FFF";
-
-    var mainMenuBtn = document.createElement('button');
-    mainMenuBtn.innerHTML = "Main Menu"
-    mainMenuBtn.style.marginLeft = "50px";
-    mainMenuBtn.style.height = "35px";
-    mainMenuBtn.style.background = "#C73E0B";
-    mainMenuBtn.style.color = "#FFF";
-
-    restartBtn.addEventListener('click', function() {
-        removeGameOverMenu();
-        startGame(player.sprite);
-    });
-    mainMenuBtn.addEventListener('click', function() {
-        removeGameOverMenu();
-        mainMenu();
-    });
-
-    gameOverDiv.appendChild(restartBtn);
-    gameOverDiv.appendChild(mainMenuBtn);
-    document.body.appendChild(gameOverDiv);
-}
-
-function hideMainMenu() {
-    document.querySelector('.main-menu').style.display = "none";
-}
-
-
-function removeGameOverMenu() {
-    scoreboard.hide();
-    document.body.removeChild(document.querySelector('.game-over-menu'));
-}
-
-function hasCollided(a, b) {
-    return a.x < b.x + b.width && a.x + a.width > b.x
-        && a.y < b.y + b.height && a.y + a.width > b.y;
-}
+var game = new Game();
 
 var Scoreboard = function Scoreboard() {
     this.collectablesViewIds = [
@@ -135,7 +130,7 @@ Scoreboard.prototype = {
     show: function() {
         document.querySelector(this.scoreboardClass).style.display = "block";
     }
-}
+};
 
 var scoreboard = new Scoreboard();
 
@@ -176,7 +171,7 @@ Enemy.prototype.render = function() {
  * the players reset function is called.
  */
 Enemy.prototype.checkCollisions = function() {
-    if (hasCollided(this, player)) {
+    if (game.hasCollided(this, player)) {
         player.wounded = true;
         player.reset();
     }
@@ -196,7 +191,7 @@ Collectable.prototype = {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 60, 102);
     },
     update: function() {
-        if (hasCollided(this, player)) {
+        if (game.hasCollided(this, player)) {
             this.destroy();
             var newCount = this.updatePlayerCollectableCount();
             scoreboard.updateCollectable(this.countViewId, newCount);
@@ -225,7 +220,7 @@ BlueGem.prototype = Object.create(Gem.prototype);
 BlueGem.prototype.constructor = BlueGem;
 BlueGem.prototype.updatePlayerCollectableCount = function() {
     return player.incrementBlueGems(1);
-}
+};
 
 var GreenGem = function(initState) {
     Gem.call(this, initState);
@@ -234,7 +229,7 @@ GreenGem.prototype = Object.create(Gem.prototype);
 GreenGem.prototype.constructor = GreenGem;
 GreenGem.prototype.updatePlayerCollectableCount = function() {
     return player.incrementGreenGems(1);
-}
+};
 
 var OrangeGem = function(initState) {
     Gem.call(this, initState);
@@ -243,7 +238,7 @@ OrangeGem.prototype = Object.create(Gem.prototype);
 OrangeGem.prototype.constructor = OrangeGem;
 OrangeGem.prototype.updatePlayerCollectableCount = function() {
     return player.incrementOrangeGems(1);
-}
+};
 
 var Heart = function(initState) {
     Collectable.call(this, initState);
@@ -252,7 +247,7 @@ Heart.prototype = Object.create(Collectable.prototype);
 Heart.prototype.constructor = Heart;
 Heart.prototype.updatePlayerCollectableCount = function() {
     return player.incrementLifeCount(1);
-}
+};
 
 var Rock = function(initState) {
     Collectable.call(this, initState);
@@ -261,7 +256,7 @@ Rock.prototype = Object.create(Collectable.prototype);
 Rock.prototype.constructor = Rock;
 Rock.prototype.updatePlayerCollectableCount = function() {
     return player.incrementRocks(1);
-}
+};
 
 
 // Now write your own player class
@@ -294,27 +289,27 @@ Player.prototype.render = function() {
 Player.prototype.incrementLifeCount = function(increment) {
     this.lifeCount+=increment;
     return this.lifeCount;
-}
+};
 
 Player.prototype.incrementScore = function(increment) {
     this.score+=increment;
     return this.score;
-}
+};
 
 Player.prototype.incrementBlueGems = function(increment) {
     this.blueGems+=increment;
     return this.blueGems;
-}
+};
 
 Player.prototype.incrementGreenGems = function(increment) {
     this.greenGems+=increment;
     return this.greenGems;
-}
+};
 
 Player.prototype.incrementOrangeGems = function(increment) {
     this.orangeGems+=increment;
     return this.orangeGems;
-}
+};
 
 Player.prototype.incrementRocks = function(increment) {
     this.rocks+=increment;
@@ -323,12 +318,12 @@ Player.prototype.incrementRocks = function(increment) {
 
 Player.prototype.isAlive = function() {
     return this.lifeCount > 0;
-}
+};
 
 Player.prototype.reachedWater = function() {
     this.score+=100;
     scoreboard.updateScore(this.score);
-}
+};
 
 /**
  * Move player left, right, up or down based on the key that is pressed.
@@ -376,7 +371,7 @@ Player.prototype.reset = function() {
         scoreboard.updateCollectable("#lives", this.lifeCount);
 
         if (this.lifeCount == 0) {
-            gameOver();
+            game.gameOver();
         } else {
             alert("You hit a bug and got wounded. You have "+ this.lifeCount + " lives remaining.");
         }
@@ -398,7 +393,7 @@ function startGame(playerSprite) {
     collectables = getCollectables();
     // Place the player object in a variable called player
     player = new Player(playerSprite);
-}
+};
 
 // Place all enemy objects in an array called allEnemies
 function getEnemies() {
@@ -423,7 +418,7 @@ function getEnemies() {
     }
 
     return enemies;
-};
+}
 
 function getCollectables() {
     var collectables = [];
