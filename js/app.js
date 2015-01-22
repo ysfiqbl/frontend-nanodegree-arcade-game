@@ -6,6 +6,14 @@ var allEnemies = null;
 var collectables = null;
 var characters = [];
 
+var Game = function Game() {
+
+}
+
+Game.prototype = function() {
+
+}
+
 function mainMenu() {
     var w = ctx.canvas.width;
     var h = ctx.canvas.height;
@@ -84,7 +92,7 @@ function hideMainMenu() {
 
 
 function removeGameOverMenu() {
-    hideScoreBoard();
+    scoreboard.hide();
     document.body.removeChild(document.querySelector('.game-over-menu'));
 }
 
@@ -93,41 +101,43 @@ function hasCollided(a, b) {
         && a.y < b.y + b.height && a.y + a.width > b.y;
 }
 
-function updateScoreView(score) {
-    document.getElementById("score").innerHTML = "SCORE: "+ score;
-}
-
-function updateCollectableViewCount(viewId, value){
-    document.querySelector(viewId + " > h4 > span").innerHTML = value;
-}
-
-function resetScoreBoard() {
-    var collectablesViewIds = [
+var Scoreboard = function Scoreboard() {
+    this.collectablesViewIds = [
         "#blue-gems",
         "#green-gems",
         "#orange-gems",
         "#rocks",
         "#lives",
     ]
+    this.scoreboardClass = ".scoreboard";
+};
+Scoreboard.prototype = {
+    updateScore: function(score) {
+        document.getElementById("score").innerHTML = "SCORE: "+ score;
+    },
+    updateCollectable: function(viewId, value){
+        document.querySelector(viewId + " > h4 > span").innerHTML = value;
+    },
+    reset: function() {
+        var viewId, value;
 
-    var viewId, value;
+        for (var i=0; i< this.collectablesViewIds.length; i++) {
+            viewId = this.collectablesViewIds[i];
+            value = "#lives" == viewId ? 3 : 0;
+            this.updateCollectable(viewId, value);
+        }
 
-    for (var i=0; i< collectablesViewIds.length; i++) {
-        viewId = collectablesViewIds[i];
-        value = "#lives" == viewId ? 3 : 0;
-        updateCollectableViewCount(viewId, value);
+        this.updateScore(0);
+    },
+    hide: function() {
+        document.querySelector(this.scoreboardClass).style.display = "none";
+    },
+    show: function() {
+        document.querySelector(this.scoreboardClass).style.display = "block";
     }
-
-    updateScoreView(0);
 }
 
-function hideScoreBoard() {
-    document.querySelector(".scoreboard").style.display = "none";
-}
-
-function showScoreBoard() {
-    document.querySelector(".scoreboard").style.display = "block";
-}
+var scoreboard = new Scoreboard();
 
 // Enemies our player must avoid
 var Enemy = function(x, y, dtMultiplier) {
@@ -189,10 +199,10 @@ Collectable.prototype = {
         if (hasCollided(this, player)) {
             this.destroy();
             var newCount = this.updatePlayerCollectableCount();
-            updateCollectableViewCount(this.countViewId, newCount);
+            scoreboard.updateCollectable(this.countViewId, newCount);
             if (this.hasOwnProperty('points')) {
                 player.incrementScore(this.points);
-                updateScoreView(player.score);
+                scoreboard.updateScore(player.score);
             }
         }
     },
@@ -317,7 +327,7 @@ Player.prototype.isAlive = function() {
 
 Player.prototype.reachedWater = function() {
     this.score+=100;
-    updateScoreView(this.score);
+    scoreboard.updateScore(this.score);
 }
 
 /**
@@ -363,7 +373,7 @@ Player.prototype.reset = function() {
     if (this.wounded) {
         this.lifeCount--;
         this.wounded = false;
-        updateCollectableViewCount("#lives", this.lifeCount);
+        scoreboard.updateCollectable("#lives", this.lifeCount);
 
         if (this.lifeCount == 0) {
             gameOver();
@@ -382,8 +392,8 @@ Player.prototype.reset = function() {
 
 // Now instantiate your objects.
 function startGame(playerSprite) {
-    showScoreBoard();
-    resetScoreBoard();
+    scoreboard.show();
+    scoreboard.reset();
     allEnemies = getEnemies();
     collectables = getCollectables();
     // Place the player object in a variable called player
