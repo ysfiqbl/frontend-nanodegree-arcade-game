@@ -6,12 +6,14 @@ var allEnemies = null;
 var collectables = null;
 var characters = [];
 var game;
+var scoreboard;
 
 var Game = function Game() {
     this.canvasWidth = ctx.canvas.width;
     this.canvasHeight = ctx.canvas.height;
     this.mainMenuClass = ".main-menu";
-    this.gameOverMenuClass = ".game-over-menu"
+    this.gameOverMenuClass = ".game-over-menu";
+    scoreboard = new Scoreboard();
 }
 
 Game.prototype = {
@@ -26,7 +28,7 @@ Game.prototype = {
             if (child.nodeName == "BUTTON") {
                 child.addEventListener("click", function(e) {
                     game.hideMainMenu();
-                    startGame(this.firstElementChild.getAttribute("src"));
+                    game.start(this.firstElementChild.getAttribute("src"));
                 }, false);
             }
 
@@ -70,7 +72,7 @@ Game.prototype = {
 
         restartBtn.addEventListener('click', function() {
             game.removeGameOverMenu();
-            startGame(player.sprite);
+            game.start(player.sprite);
         });
         mainMenuBtn.addEventListener('click', function() {
             game.removeGameOverMenu();
@@ -91,6 +93,116 @@ Game.prototype = {
     hasCollided: function(a, b) {
         return a.x < b.x + b.width && a.x + a.width > b.x
             && a.y < b.y + b.height && a.y + a.width > b.y;
+    },
+    // Now instantiate your objects.
+    start: function(playerSprite) {
+        scoreboard.show();
+        scoreboard.reset();
+        allEnemies = this.getEnemies();
+        collectables = this.getCollectables();
+        // Place the player object in a variable called player
+        player = new Player(playerSprite);
+    },
+
+    // Place all enemy objects in an array called allEnemies
+    getEnemies: function() {
+        var enemies = [];
+        var yCordinates = [60, 145, 230];
+        var yEnemyMax = 1;
+        var yEnemyCounter = [0, 0, 0];
+        var xCordinates = [1, 200, 400];
+        var maxEnemies = 4;
+        var totalEnemies = 0;
+
+        while (totalEnemies <= maxEnemies) {
+            var dtMultiplier = Math.ceil(Math.random()*300 + 100);
+            var yIndex = Math.ceil(Math.random()*3) - 1;
+            var yStart = yCordinates[yIndex];
+            var xStart = xCordinates[Math.ceil(Math.random()*3) - 1];
+            if (yEnemyCounter[yIndex] <= yEnemyMax) {
+                enemies.push(new Enemy(xStart, yStart, dtMultiplier));
+                yEnemyCounter[yIndex]++;
+                totalEnemies = yEnemyCounter[0] + yEnemyCounter[1] + yEnemyCounter[2];
+            }
+        }
+        return enemies;
+    },
+    getCollectables: function() {
+        var collectables = [];
+        var yCordinates = [100, 185, 270];
+        var xCordinates = [20, 120, 220, 320, 420];
+        var maxGems = 2, numGems = 0;
+        var maxHearts = 1, numHearts = 0;
+        var maxRocks = 2, numRocks = 0;
+        var maxCollectables = maxGems + maxHearts + maxRocks;
+        var xStart, yStart, yIndex, rand = 0;
+
+        var isVacantSpace = function() {
+            for (var i = 0; i < collectables.length; i++) {
+                if (collectables[i].x == xStart && collectables[i].y == yStart) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+
+        for (var i = 0; i <= maxCollectables; i++) {
+            yIndex = Math.ceil(Math.random()*3) - 1;
+            yStart = yCordinates[yIndex];
+            xStart = xCordinates[Math.ceil(Math.random()*5) - 1];
+            rand = Math.random();
+            if (isVacantSpace()) {
+                if (numHearts < maxHearts && rand > .98) {
+                    collectables.push(new Heart({
+                        x: xStart,
+                        y: yStart,
+                        sprite: 'images/Heart.png',
+                        countViewId: '#lives'
+                    }));
+                    numHearts++;
+                } else if (numRocks < maxRocks && rand > .70) {
+                    collectables.push(new Rock({
+                        x: xStart, y:
+                        yStart,
+                        sprite: 'images/Rock.png',
+                        countViewId: '#rocks'
+                    }));
+                    numRocks++;
+                } else if (numGems < maxGems) {
+                    if (rand < .4) {
+                        // Add Blue Gem
+                        collectables.push(new BlueGem({
+                            x: xStart,
+                            y: yStart,
+                            sprite: 'images/Gem Blue.png',
+                            points: 100,
+                            countViewId: '#blue-gems'
+                        }));
+                    } else if (rand >= .4 && rand < .65) {
+                        // Add Green Gem
+                        collectables.push(new GreenGem({
+                            x: xStart,
+                            y: yStart,
+                            sprite: 'images/Gem Green.png',
+                            points: 200,
+                            countViewId: '#green-gems'
+                        }));
+                    } else {
+                        // Add Orange Gem
+                        collectables.push(new OrangeGem({
+                            x: xStart,
+                            y: yStart,
+                            sprite: 'images/Gem Orange.png',
+                            points: 300,
+                            countViewId: '#orange-gems'
+                        }));
+                    }
+                    numGems++;
+                }
+            }
+        }
+        return collectables;
     }
 };
 
@@ -129,8 +241,6 @@ Scoreboard.prototype = {
         document.querySelector(this.scoreboardClass).style.display = "block";
     }
 };
-
-var scoreboard = new Scoreboard();
 
 // Enemies our player must avoid
 var Enemy = function(x, y, dtMultiplier) {
@@ -379,123 +489,10 @@ Player.prototype.reset = function() {
     }
     this.x = this.origin.x;
     this.y = this.origin.y;
-    allEnemies = getEnemies();
-    collectables = getCollectables();
+    allEnemies = game.getEnemies();
+    collectables = game.getCollectables();
 };
 
-// Now instantiate your objects.
-function startGame(playerSprite) {
-    scoreboard.show();
-    scoreboard.reset();
-    allEnemies = getEnemies();
-    collectables = getCollectables();
-    // Place the player object in a variable called player
-    player = new Player(playerSprite);
-};
-
-// Place all enemy objects in an array called allEnemies
-function getEnemies() {
-    var enemies = [];
-    var yCordinates = [60, 145, 230];
-    var yEnemyMax = 1;
-    var yEnemyCounter = [0, 0, 0];
-    var xCordinates = [1, 200, 400];
-    var maxEnemies = 4;
-    var totalEnemies = 0;
-
-    while (totalEnemies <= maxEnemies) {
-        var dtMultiplier = Math.ceil(Math.random()*300 + 100);
-        var yIndex = Math.ceil(Math.random()*3) - 1;
-        var yStart = yCordinates[yIndex];
-        var xStart = xCordinates[Math.ceil(Math.random()*3) - 1];
-        if (yEnemyCounter[yIndex] <= yEnemyMax) {
-            enemies.push(new Enemy(xStart, yStart, dtMultiplier));
-            yEnemyCounter[yIndex]++;
-            totalEnemies = yEnemyCounter[0] + yEnemyCounter[1] + yEnemyCounter[2];
-        }
-    }
-
-    return enemies;
-}
-
-function getCollectables() {
-    var collectables = [];
-    var yCordinates = [100, 185, 270];
-    var xCordinates = [20, 120, 220, 320, 420];
-    var maxGems = 2, numGems = 0;
-    var maxHearts = 1, numHearts = 0;
-    var maxRocks = 2, numRocks = 0;
-    var maxCollectables = maxGems + maxHearts + maxRocks;
-    var xStart, yStart, yIndex, rand = 0;
-
-    var isVacantSpace = function() {
-        for (var i = 0; i < collectables.length; i++) {
-            if (collectables[i].x == xStart && collectables[i].y == yStart) {
-                return false;
-            }
-        }
-
-        return true;
-    };
-
-    for (var i = 0; i <= maxCollectables; i++) {
-        yIndex = Math.ceil(Math.random()*3) - 1;
-        yStart = yCordinates[yIndex];
-        xStart = xCordinates[Math.ceil(Math.random()*5) - 1];
-        rand = Math.random();
-        if (isVacantSpace()) {
-            if (numHearts < maxHearts && rand > .98) {
-                collectables.push(new Heart({
-                    x: xStart,
-                    y: yStart,
-                    sprite: 'images/Heart.png',
-                    countViewId: '#lives'
-                }));
-                numHearts++;
-            } else if (numRocks < maxRocks && rand > .70) {
-                collectables.push(new Rock({
-                    x: xStart, y:
-                    yStart,
-                    sprite: 'images/Rock.png',
-                    countViewId: '#rocks'
-                }));
-                numRocks++;
-            } else if (numGems < maxGems) {
-                if (rand < .4) {
-                    // Add Blue Gem
-                    collectables.push(new BlueGem({
-                        x: xStart,
-                        y: yStart,
-                        sprite: 'images/Gem Blue.png',
-                        points: 100,
-                        countViewId: '#blue-gems'
-                    }));
-                } else if (rand >= .4 && rand < .65) {
-                    // Add Green Gem
-                    collectables.push(new GreenGem({
-                        x: xStart,
-                        y: yStart,
-                        sprite: 'images/Gem Green.png',
-                        points: 200,
-                        countViewId: '#green-gems'
-                    }));
-                } else {
-                    // Add Orange Gem
-                    collectables.push(new OrangeGem({
-                        x: xStart,
-                        y: yStart,
-                        sprite: 'images/Gem Orange.png',
-                        points: 300,
-                        countViewId: '#orange-gems'
-                    }));
-                }
-                numGems++;
-            }
-        }
-    }
-
-    return collectables;
-}
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
