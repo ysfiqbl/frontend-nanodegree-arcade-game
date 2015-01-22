@@ -174,6 +174,7 @@ var Engine = (function(global) {
      */
     function reset() {
         // noop
+        game = new Game();
         game.mainMenu();
     }
 

@@ -5,16 +5,18 @@ var player = null;
 var allEnemies = null;
 var collectables = null;
 var characters = [];
+var game;
 
 var Game = function Game() {
-
+    this.canvasWidth = ctx.canvas.width;
+    this.canvasHeight = ctx.canvas.height;
+    this.mainMenuClass = ".main-menu";
+    this.gameOverMenuClass = ".game-over-menu"
 }
 
 Game.prototype = {
     mainMenu: function() {
-        var w = ctx.canvas.width;
-        var h = ctx.canvas.height;
-        ctx.clearRect(0, 0, w, h);
+        ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         var mainMenuDiv = document.querySelector(".main-menu");
         mainMenuDiv.style.display = "block";
         mainMenuDivChildren = mainMenuDiv.children;
@@ -31,14 +33,12 @@ Game.prototype = {
         }
     },
     gameOver: function() {
-        var w = ctx.canvas.width;
-        var h = ctx.canvas.height;
         ctx.shadowColor = "black";
         ctx.shadowOffsetX= 10;
         ctx.shadowOffsetY = 10;
         ctx.shadowBlur = 10;
         ctx.fillStyle = "#812807";
-        ctx.fillRect(40, 200, w - 80, h - 400);
+        ctx.fillRect(40, 200, this.canvasWidth - 80, this.canvasHeight - 400);
 
         ctx.shadowOffsetX= 0;
         ctx.shadowOffsetY = 0;
@@ -47,14 +47,14 @@ Game.prototype = {
         ctx.fillStyle = "#C73E0B";
         ctx.fillText("Game Over!", 140, 290);
 
-        var gameOverDiv = document.createElement('div');
+        var gameOverDiv = document.createElement("div");
         gameOverDiv.style.display = "block";
         gameOverDiv.style.position = "relative";
         gameOverDiv.style.top = "-260px";
         gameOverDiv.style.left = "5px";
-        gameOverDiv.classList.add('game-over-menu');
+        gameOverDiv.classList.add(this.gameOverMenuClass.slice(1));
 
-        var restartBtn = document.createElement('button');
+        var restartBtn = document.createElement("button");
         restartBtn.innerHTML = "Restart"
         restartBtn.style.marginRight = "50px";
         restartBtn.style.height = "35px";
@@ -82,19 +82,17 @@ Game.prototype = {
         document.body.appendChild(gameOverDiv);
     },
     hideMainMenu: function() {
-        document.querySelector('.main-menu').style.display = "none";
+        document.querySelector(this.mainMenuClass).style.display = "none";
     },
     removeGameOverMenu: function() {
         scoreboard.hide();
-        document.body.removeChild(document.querySelector('.game-over-menu'));
+        document.body.removeChild(document.querySelector(this.gameOverMenuClass));
     },
     hasCollided: function(a, b) {
         return a.x < b.x + b.width && a.x + a.width > b.x
             && a.y < b.y + b.height && a.y + a.width > b.y;
     }
 };
-
-var game = new Game();
 
 var Scoreboard = function Scoreboard() {
     this.collectablesViewIds = [
