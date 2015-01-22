@@ -3,6 +3,7 @@ var game;
 var player = null;
 var allEnemies = null;
 var collectables = null;
+//var thrownRocks = [];
 
 /**
  * The Game object has contains the functions to handle the main menu, game over menu,
@@ -18,6 +19,7 @@ var Game = function Game() {
 	this.gameOverMenuClass = ".game-over-menu";
 	this.maxEnemies = 4;
 	this.scoreboard = new Scoreboard();
+	this.thrownRocks = [];
 }
 
 Game.prototype = {
@@ -131,6 +133,7 @@ Game.prototype = {
 		player = new Player(playerSprite);
 		this.scoreboard.show();
 		this.scoreboard.reset();
+		this.thrownRocks = [];
 		allEnemies = this.getEnemies();
 		collectables = this.getCollectables();
 	},
@@ -143,7 +146,7 @@ Game.prototype = {
 	 * The total number of enemies can be controlled by changing the maxEnemies variable in the
 	 * Game constructor.
 	 *
-	 * @return {Array} containing the enemies.
+	 * @return {array} containing the enemies.
 	 */
 	getEnemies: function() {
 		var enemies = [];
@@ -213,8 +216,8 @@ Game.prototype = {
 					numHearts++;
 				} else if (numRocks < maxRocks && player.rocks <= 10 && rand > .70) {
 					collectables.push(new Rock({
-						x: xStart, y:
-						yStart,
+						x: xStart,
+						y: yStart,
 						sprite: 'images/Rock.png',
 						countViewId: '#rocks'
 					}));
@@ -330,6 +333,7 @@ var Enemy = function(x, y, dtMultiplier) {
 	// The image/sprite for our enemies, this uses
 	// a helper we've provided to easily load images
 	this.sprite = 'images/enemy-bug.png';
+	this.isAlive = true;
 };
 
 Enemy.prototype = {
@@ -346,7 +350,9 @@ Enemy.prototype = {
 		if (this.x > ctx.canvas.width) {
 			this.x = -100;
 		}
-		this.x = this.x + this.dtMultiplier*dt;
+		if (this.isAlive) {
+			this.x = this.x + this.dtMultiplier*dt;
+		}
 		this.checkCollisions();
 	},
 
@@ -366,6 +372,20 @@ Enemy.prototype = {
 			player.wounded = true;
 			player.reset();
 		}
+		if (game.thrownRocks.length > 0) {
+			for (var i = 0; i < game.thrownRocks.length; i++) {
+				var rock = game.thrownRocks[i];
+				if(rock != null && rock.thrown && game.hasCollided(this, rock)) {
+					rock.destroy();
+					rock.thrown = false;
+					this.killed();
+				}
+			}
+		}
+	},
+	killed: function() {
+		this.isAlive = false;
+		this.x = -100;
 	}
 };
 
@@ -380,6 +400,7 @@ var Collectable = function(initState) {
 	this.width = initState.width || 40;
 	this.height = initState.height || 40;
 	this.countViewId = initState.countViewId;
+	this.destroyed = false;
 };
 
 Collectable.prototype = {
@@ -396,7 +417,7 @@ Collectable.prototype = {
 	update: function() {
 		if (game.hasCollided(this, player)) {
 			this.destroy();
-			var newCount = this.updatePlayerCollectableCount();
+			var newCount = this.incrementPlayerCollectableCount(1);
 			game.scoreboard.updateCollectable(this.countViewId, newCount);
 			if (this.hasOwnProperty('points')) {
 				player.incrementScore(this.points);
@@ -408,6 +429,7 @@ Collectable.prototype = {
 	 * To destroy the object is moved out of the playing area.
 	 */
 	destroy: function () {
+		this.destroyed = true;
 		this.x = -100;
 	}
 };
@@ -437,8 +459,8 @@ BlueGem.prototype.constructor = BlueGem;
  * Update the number of blue gems the player has
  * @return {int} the number of blue gems the player has.
  */
-BlueGem.prototype.updatePlayerCollectableCount = function() {
-	return player.incrementBlueGems(1);
+BlueGem.prototype.incrementPlayerCollectableCount = function(x) {
+	return player.incrementBlueGems(x);
 };
 
 /**
@@ -454,8 +476,8 @@ GreenGem.prototype.constructor = GreenGem;
  * Update the number of green gems the player has
  * @return {int} the number of green gems the player has.
  */
-GreenGem.prototype.updatePlayerCollectableCount = function() {
-	return player.incrementGreenGems(1);
+GreenGem.prototype.incrementPlayerCollectableCount = function(x) {
+	return player.incrementGreenGems(x);
 };
 
 /**
@@ -471,8 +493,8 @@ OrangeGem.prototype.constructor = OrangeGem;
  * Update the number of orange gems the player has
  * @return {int} the number of orange gems the player has.
  */
-OrangeGem.prototype.updatePlayerCollectableCount = function() {
-	return player.incrementOrangeGems(1);
+OrangeGem.prototype.incrementPlayerCollectableCount = function(x) {
+	return player.incrementOrangeGems(x);
 };
 
 /**
@@ -488,8 +510,8 @@ Heart.prototype.constructor = Heart;
  * Update the players life count
  * @return {int} the number of lives the player has.
  */
-Heart.prototype.updatePlayerCollectableCount = function() {
-	return player.incrementLifeCount(1);
+Heart.prototype.incrementPlayerCollectableCount = function(x) {
+	return player.incrementLifeCount(x);
 };
 
 /**
@@ -498,6 +520,7 @@ Heart.prototype.updatePlayerCollectableCount = function() {
  */
 var Rock = function(initState) {
 	Collectable.call(this, initState);
+	this.thrown = false;
 };
 Rock.prototype = Object.create(Collectable.prototype);
 Rock.prototype.constructor = Rock;
@@ -505,9 +528,17 @@ Rock.prototype.constructor = Rock;
  * Update the number of rocks the player has
  * @return {int} the number of rocks the player has.
  */
-Rock.prototype.updatePlayerCollectableCount = function() {
-	return player.incrementRocks(1);
+Rock.prototype.incrementPlayerCollectableCount = function(x) {
+	return player.incrementRocks(x);
 };
+
+Rock.prototype.update = function() {
+	if (this.thrown && !this.destroyed) {
+		this.x = this.x - 10;
+	} else {
+		Collectable.prototype.update.call(this);
+	}
+}
 
 
 /**
@@ -574,33 +605,61 @@ Player.prototype = {
 	 * @param  {string} keyCode indicate which arrow key was pressed.
 	 */
 	handleInput: function(keyCode) {
-		var yStep = 80;
-		var xStep = 100;
 		switch(keyCode) {
+			case 'throw':
+				this.throwRock();
+			break;
 			case 'left':
-				if(this.x != 0) {
-					this.x -= this.step.x;
-				}
+				this.moveLeft();
 			break;
 			case 'up':
-				if(this.y != 70) {
-					this.y -= this.step.y;
-				} else {
-					this.reset();
-				}
+				this.moveUp();
 			break;
 			case 'right':
-				if(this.x != 400) {
-					this.x += this.step.x;
-				}
+				this.moveRight();
 			break;
 			case 'down':
-				if(this.y != 390) {
-					this.y += this.step.y;
-				}
+				this.moveDown();
 			break;
 			default:
 			break;
+		}
+	},
+	throwRock: function() {
+		if (this.rocks > 0) {
+			var rock = new Rock({
+				x: this.x,
+				y: this.y + 25,
+				sprite: 'images/Rock.png',
+				countViewId: '#rocks'
+			});
+			rock.thrown = true;
+			this.rocks--;
+			game.scoreboard.updateCollectable(rock.countViewId, this.rocks);
+			collectables.push(rock);
+			game.thrownRocks.push(rock);
+		}
+	},
+	moveLeft: function() {
+		if(this.x != 0) {
+			this.x -= this.step.x;
+		}
+	},
+	moveUp: function() {
+		if(this.y != 70) {
+			this.y -= this.step.y;
+		} else {
+			this.reset();
+		}
+	},
+	moveRight: function() {
+		if(this.x != 400) {
+			this.x += this.step.x;
+		}
+	},
+	moveDown: function() {
+		if(this.y != 390) {
+			this.y += this.step.y;
 		}
 	},
 	checkCollisions: function() {
@@ -633,6 +692,7 @@ Player.prototype = {
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
 	var allowedKeys = {
+		32: 'throw',
 		37: 'left',
 		38: 'up',
 		39: 'right',
