@@ -1,9 +1,8 @@
-// y and x distance when moving between two squares
+// Global variables required for the game
+var game;
 var player = null;
 var allEnemies = null;
 var collectables = null;
-var game;
-var scoreboard;
 
 /**
  * The Game object has contains the functions to handle the main menu, game over menu,
@@ -18,7 +17,7 @@ var Game = function Game() {
 	this.mainMenuClass = ".main-menu";
 	this.gameOverMenuClass = ".game-over-menu";
 	this.maxEnemies = 4;
-	scoreboard = new Scoreboard();
+	this.scoreboard = new Scoreboard();
 }
 
 Game.prototype = {
@@ -104,7 +103,7 @@ Game.prototype = {
 	 * Removes the game over menu.
 	 */
 	removeGameOverMenu: function() {
-		scoreboard.hide();
+		this.scoreboard.hide();
 		document.body.removeChild(document.querySelector(this.gameOverMenuClass));
 	},
 	/**
@@ -130,8 +129,8 @@ Game.prototype = {
 	 */
 	start: function(playerSprite) {
 		player = new Player(playerSprite);
-		scoreboard.show();
-		scoreboard.reset();
+		this.scoreboard.show();
+		this.scoreboard.reset();
 		allEnemies = this.getEnemies();
 		collectables = this.getCollectables();
 	},
@@ -399,10 +398,10 @@ Collectable.prototype = {
 		if (game.hasCollided(this, player)) {
 			this.destroy();
 			var newCount = this.updatePlayerCollectableCount();
-			scoreboard.updateCollectable(this.countViewId, newCount);
+			game.scoreboard.updateCollectable(this.countViewId, newCount);
 			if (this.hasOwnProperty('points')) {
 				player.incrementScore(this.points);
-				scoreboard.updateScore(player.score);
+				game.scoreboard.updateScore(player.score);
 			}
 		}
 	},
@@ -569,7 +568,7 @@ Player.prototype = {
 	},
 	reachedWater: function() {
 		this.score+=100;
-		scoreboard.updateScore(this.score);
+		game.scoreboard.updateScore(this.score);
 	},
 	/**
 	 * Move player left, right, up or down based on the key that is pressed.
@@ -612,7 +611,7 @@ Player.prototype = {
 		if (this.wounded) {
 			this.lifeCount--;
 			this.wounded = false;
-			scoreboard.updateCollectable("#lives", this.lifeCount);
+			game.scoreboard.updateCollectable("#lives", this.lifeCount);
 
 			if (this.lifeCount == 0) {
 				game.gameOver();
