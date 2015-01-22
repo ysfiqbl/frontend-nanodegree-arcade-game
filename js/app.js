@@ -33,7 +33,7 @@ function gameOver() {
     ctx.shadowOffsetX= 10;
     ctx.shadowOffsetY = 10;
     ctx.shadowBlur = 10;
-    ctx.fillStyle = "#812807"; //"#C73E0B";
+    ctx.fillStyle = "#812807";
     ctx.fillRect(40, 200, w - 80, h - 400);
 
     ctx.shadowOffsetX= 0;
