@@ -1,11 +1,11 @@
 # Death by Bug
-The object of the game is for the player to reach the water at the opposite end without hitting any enemy bugs.  
+The object of the game is for the player to reach the water at the opposite end without hitting any lady bugs.  
 Along the way the player can collect gems, hearts and rocks on the board.  
-Gems add to the score, hearts add lives and rocks can be thrown to kill enemies.  
+Gems add to the score, hearts add lives and rocks can be thrown to kill enemy lady bugs.  
 
 ## Instructions
 Use up, right, left and down arrow keys to move the player.  
-Use the space bar to throw rocks and kill enemy bugs.  
+Use the space bar to throw rocks and kill enemy lady bugs.  
 
 - Blue Gem: 100 points
 - Green Gem: 200 points
@@ -13,7 +13,7 @@ Use the space bar to throw rocks and kill enemy bugs.
 - Heart: 1 Life
 - Reach the water: 100 points
 
-When the player reaches the water, the player returns to the starting point and new enemies and collectables items are spawned.
+When the player reaches the water, the player returns to the starting point and new lady bugs and collectable items are spawned.
 
 You start with 3 lives and the game ends when you run out of lives.  
 You can collect a maximum of 10 rocks.  
