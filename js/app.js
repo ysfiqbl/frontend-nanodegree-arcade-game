@@ -367,14 +367,19 @@ Enemy.prototype = {
 	 * the players reset function is called.
 	 */
 	checkCollisions: function() {
+		// If enemy collides with the player, mark the player as wounded and reset player.
 		if (game.hasCollided(this, player)) {
 			player.wounded = true;
 			player.reset();
 		}
+
+		// If game.thrown rocks has a length greater than zero the player has thrown a rock
+		// Loop through all the rocks and check if it has hit the enemy.
+		// Destroy the rock and kill the enemy if the rock and enemy collides.
 		if (game.thrownRocks.length > 0) {
 			for (var i = 0; i < game.thrownRocks.length; i++) {
 				var rock = game.thrownRocks[i];
-				if(rock != null && rock.thrown && game.hasCollided(this, rock)) {
+				if(rock.thrown && game.hasCollided(this, rock)) {
 					rock.destroy();
 					rock.thrown = false;
 					this.killed();
@@ -382,6 +387,10 @@ Enemy.prototype = {
 			}
 		}
 	},
+	/**
+	 * Set the isAlive flag as false to indicate that the enemy is dead and move it out of
+	 * the playing area.
+	 */
 	killed: function() {
 		this.isAlive = false;
 		this.x = -100;
@@ -661,9 +670,11 @@ Player.prototype = {
 			this.y += this.step.y;
 		}
 	},
-	checkCollisions: function() {
-
-	},
+	/**
+	 * Reset the player to the origin and create new enemies and collectables.
+	 * If the player is hit by an enemy decrement the life count. If the life
+	 * count is zero then game is over.
+	 */
 	reset: function() {
 		if (this.wounded) {
 			this.lifeCount--;
