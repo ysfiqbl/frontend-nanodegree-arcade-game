@@ -3,7 +3,6 @@ var game;
 var player = null;
 var allEnemies = null;
 var collectables = null;
-//var thrownRocks = [];
 
 /**
  * The Game object has contains the functions to handle the main menu, game over menu,
