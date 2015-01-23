@@ -1,5 +1,4 @@
 # Death by Bug
-==============
 The object of the game is for the player to reach the water at the opposite end without hitting any enemy bugs.  
 Along the way the player can collect gems, hearts and rocks on the board.  
 Gems add to the score, hearts add lives and rocks can be thrown to kill enemies.  
