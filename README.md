@@ -5,10 +5,10 @@ The object of the game is for the player to reach the water at the opposite end 
 Use up, right, left and down arrow keys to move the player.
 Use the space bar to throw rocks and kill enemy bugs.
 
-Blue Gem: 100 points
-Green Gem: 200 points
-Orange Gem: 300 points
-Heart: 1 Life
-Reach the water: 100 points
+-Blue Gem: 100 points
+-Green Gem: 200 points
+-Orange Gem: 300 points
+-Heart: 1 Life
+-Reach the water: 100 points
 
 When the player reaches the water, the player returns to the starting point and new enemies and collectables items are spawned.
