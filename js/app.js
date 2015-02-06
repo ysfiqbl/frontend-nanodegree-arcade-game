@@ -19,7 +19,7 @@ var Game = function Game() {
 	this.maxEnemies = 4;
 	this.scoreboard = new Scoreboard();
 	this.thrownRocks = [];
-}
+};
 
 Game.prototype = {
 	/**
@@ -29,7 +29,7 @@ Game.prototype = {
 		ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 		var mainMenuDiv = document.querySelector(".main-menu");
 		mainMenuDiv.style.display = "block";
-		mainMenuDivChildren = mainMenuDiv.children;
+		var mainMenuDivChildren = mainMenuDiv.children;
 		var child;
 		for (var i = 0; i < mainMenuDivChildren.length; i++) {
 			 child = mainMenuDivChildren[i];
@@ -47,15 +47,15 @@ Game.prototype = {
 	 */
 	gameOver: function() {
 		ctx.shadowColor = "black";
-		ctx.shadowOffsetX= 10;
+		ctx.shadowOffsetX = 10;
 		ctx.shadowOffsetY = 10;
 		ctx.shadowBlur = 10;
 		ctx.fillStyle = "#812807";
 		ctx.fillRect(40, 200, this.canvasWidth - 80, this.canvasHeight - 400);
 
-		ctx.shadowOffsetX= 0;
+		ctx.shadowOffsetX = 0;
 		ctx.shadowOffsetY = 0;
-		ctx.font = "48px serif"
+		ctx.font = "48px serif";
 		ctx.fillText("Game Over!", 140, 290);
 		ctx.fillStyle = "#C73E0B";
 		ctx.fillText("Game Over!", 140, 290);
@@ -546,7 +546,7 @@ Rock.prototype.update = function() {
 	} else {
 		Collectable.prototype.update.call(this);
 	}
-}
+};
 
 
 /**
@@ -578,34 +578,34 @@ Player.prototype = {
 		ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 	},
 	incrementLifeCount: function(increment) {
-		this.lifeCount+=increment;
+		this.lifeCount += increment;
 		return this.lifeCount;
 	},
 	incrementScore: function(increment) {
-		this.score+=increment;
+		this.score += increment;
 		return this.score;
 	},
 	incrementBlueGems: function(increment) {
-		this.blueGems+=increment;
+		this.blueGems += increment;
 		return this.blueGems;
 	},
 	incrementGreenGems: function(increment) {
-		this.greenGems+=increment;
+		this.greenGems += increment;
 		return this.greenGems;
 	},
 	incrementOrangeGems: function(increment) {
-		this.orangeGems+=increment;
+		this.orangeGems += increment;
 		return this.orangeGems;
 	},
 	incrementRocks: function(increment) {
-		this.rocks+=increment;
+		this.rocks += increment;
 		return this.rocks;
 	},
 	isAlive: function() {
 		return this.lifeCount > 0;
 	},
 	reachedWater: function() {
-		this.score+=100;
+		this.score += 100;
 		game.scoreboard.updateScore(this.score);
 	},
 	/**
