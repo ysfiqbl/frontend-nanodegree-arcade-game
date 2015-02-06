@@ -379,7 +379,7 @@ Enemy.prototype = {
 		if (game.thrownRocks.length > 0) {
 			for (var i = 0; i < game.thrownRocks.length; i++) {
 				var rock = game.thrownRocks[i];
-				if(rock.thrown && game.hasCollided(this, rock)) {
+				if (rock.thrown && game.hasCollided(this, rock)) {
 					rock.destroy();
 					rock.thrown = false;
 					this.killed();
@@ -649,24 +649,24 @@ Player.prototype = {
 		}
 	},
 	moveLeft: function() {
-		if(this.x != 0) {
+		if (this.x != 0) {
 			this.x -= this.step.x;
 		}
 	},
 	moveUp: function() {
-		if(this.y != 70) {
+		if (this.y != 70) {
 			this.y -= this.step.y;
 		} else {
 			this.reset();
 		}
 	},
 	moveRight: function() {
-		if(this.x != 400) {
+		if (this.x != 400) {
 			this.x += this.step.x;
 		}
 	},
 	moveDown: function() {
-		if(this.y != 390) {
+		if (this.y != 390) {
 			this.y += this.step.y;
 		}
 	},
