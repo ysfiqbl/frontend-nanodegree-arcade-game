@@ -1,50 +1,42 @@
 body {
-	text-align: center;
-	font-family: 'Oxygen', sans-serif;
+    text-align: center;
+    font-family: 'Oxygen', sans-serif;
 }
-
 h1 {
-	position: relative;
-	top: 50px;
+    position: relative;
+    top: 50px;
 }
-
 h5 {
-	position: relative;
-	top: 30px;
+    position: relative;
+    top: 30px;
 }
-
 .scoreboard {
-	display: none;
-	position: relative;
-	top: 50px;
-	margin-left: 382px;
-	margin-right: 382px;
-	background: gray;
+    display: none;
+    position: relative;
+    top: 50px;
+    margin-left: 382px;
+    margin-right: 382px;
+    background: gray;
 }
-
 .scoreboard > h2 {
-	position: relative;
-	top: 25px;
+    position: relative;
+    top: 25px;
 }
-
 .icon {
-	display: inline-block;
-	padding-right: 40px;
+    display: inline-block;
+    padding-right: 40px;
 }
-
 .icon > img {
-	width: 30px;
-	height: auto;
-	vertical-align: -10px;
+    width: 30px;
+    height: auto;
+    vertical-align: -10px;
 }
-
 .icon > h4 {
-	margin-bottom: 10px;
-	display: inline-block;
+    margin-bottom: 10px;
+    display: inline-block;
 }
-
 .main-menu {
-	display: none;
-	position: relative;
-	top: 50px;
+    display: none;
+    position: relative;
+    top: 50px;
 }
